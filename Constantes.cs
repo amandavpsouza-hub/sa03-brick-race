@@ -7,15 +7,18 @@ namespace BrickRace
         public const int ALTURA_CARRO = 3;
 
         public const int VIDAS_INICIAIS = 3;
-        public const int VELOCIDADE_INICIAL_MS = 250;
-        public const int VELOCIDADE_MINIMA_MS = 80;
-        public const int REDUCAO_VELOCIDADE_POR_NIVEL_MS = 20;
+        public const int VELOCIDADE_INICIAL_MS = 200; // velocidade real inicial 5x mais rápida
+        public const int VELOCIDADE_MINIMA_MS = 10;
+        public const double VELOCIDADE_DIMINUIR_POR_NIVEL = 0.92;
+        public const double VELOCIDADE_MULTIPLICADOR_INICIAL = 5.0;
         public const int PONTOS_POR_DESVIO = 10;
         public const int PONTOS_PARA_SUBIR_NIVEL = 50;
         public const int LINHA_COLISAO = ALTURA_PISTA - ALTURA_CARRO;
-        public const int MAX_OBSTACULOS_SIMULTANEOS = 2;
-        public const int MIN_OBSTACULOS_SIMULTANEOS = 1;
-        public const int MARGEM_SEGURANCA_GERACAO = 6;
+        public const int OBSTACULOS_BASE = 2;
+        public const int OBSTACULOS_POR_NIVEL = 1;
+        public const int OBSTACULOS_MAXIMOS = 6;
+        public const int MARGEM_SEGURANCA_GERACAO = 8;
+        public const int TEMPO_BLOQUEIO_OPOSITO = 2;
         public const string CAMINHO_TRILHA_SONORA = "musica.wav";
 
         public static readonly string[] FORMATO_OBSTACULO =

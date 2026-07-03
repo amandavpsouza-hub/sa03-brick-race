@@ -190,6 +190,8 @@ namespace BrickRace
             int linhas = matriz.GetLength(0);
             int colunas = matriz.GetLength(1);
             int larguraPista = colunas + 2; // espaço interno ao redor da pista
+            int larguraPainelInterna = PAINEL_LARGURA + 2;
+            double velocidadeIndicada = Math.Max(1.0, (1000.0 / velocidadeMs) / Constantes.VELOCIDADE_MULTIPLICADOR_INICIAL);
 
             string[] painel =
             {
@@ -197,7 +199,7 @@ namespace BrickRace
                 "RECORDE : " + recorde.ToString("000000"),
                 "NIVEL   : " + nivel.ToString("00"),
                 "VIDAS   : " + vidas,
-                "VELOC.  : " + velocidadeMs + " ms",
+                "VELOC.  : " + velocidadeIndicada.ToString("0.0") + "x",
                 "",
                 "CONTROLES",
                 "A ou seta esquerda",
@@ -212,12 +214,12 @@ namespace BrickRace
                 "NIVEL ATUAL = " + nivel
             };
 
-            string tituloPista = "PISTA".PadLeft((larguraPista + 4 + "PISTA".Length) / 2).PadRight(larguraPista + 4);
-            string tituloPainel = "PAINEL".PadLeft((PAINEL_LARGURA + 2 + "PAINEL".Length) / 2).PadRight(PAINEL_LARGURA + 2);
+            string tituloPista = "PISTA".PadLeft((larguraPista + "PISTA".Length) / 2).PadRight(larguraPista - 2);
+            string tituloPainel = "PAINEL".PadLeft((PAINEL_LARGURA + "PAINEL".Length) / 2).PadRight(PAINEL_LARGURA);
 
-            construtor.AppendLine($"╔{new string('═', larguraPista)}╦{new string('═', PAINEL_LARGURA)}╗");
+            construtor.AppendLine($"╔{new string('═', larguraPista)}╦{new string('═', larguraPainelInterna)}╗");
             construtor.AppendLine($"║ {tituloPista} ║ {tituloPainel} ║");
-            construtor.AppendLine($"╠{new string('═', larguraPista)}╬{new string('═', PAINEL_LARGURA)}╣");
+            construtor.AppendLine($"╠{new string('═', larguraPista)}╬{new string('═', larguraPainelInterna)}╣");
 
             for (int linha = 0; linha < linhas; linha++)
             {
@@ -233,7 +235,7 @@ namespace BrickRace
                 construtor.AppendLine(" ║");
             }
 
-            construtor.AppendLine($"╚{new string('═', larguraPista)}╩{new string('═', PAINEL_LARGURA)}╝");
+            construtor.AppendLine($"╚{new string('═', larguraPista)}╩{new string('═', larguraPainelInterna)}╝");
 
             Console.SetCursorPosition(0, 0);
             Console.Write(construtor.ToString());

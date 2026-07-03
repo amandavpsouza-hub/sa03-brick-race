@@ -1,1 +1,1 @@
-pontuacao=1190;nivel=24;desviados=119
+pontuacao=1600;nivel=33;desviados=160

@@ -19,6 +19,8 @@ namespace BrickRace
         private int _vidas = Constantes.VIDAS_INICIAIS;
         private int _velocidadeMs = Constantes.VELOCIDADE_INICIAL_MS;
         private int _obstaculosDesviados = 0;
+        private int _rodadasBloqueioOposto = 0;
+        private int _pistaUltimoGerado = -1;
         private bool _sairSolicitado = false;
 
         /// <summary>
@@ -158,17 +160,25 @@ namespace BrickRace
         private void AtualizarNivelEVelocidade()
         {
             int nivelCalculado = (_pontuacao / Constantes.PONTOS_PARA_SUBIR_NIVEL) + 1;
+            int nivelVelocidade = (int)Math.Max(1, Math.Round((1000.0 / _velocidadeMs) / Constantes.VELOCIDADE_MULTIPLICADOR_INICIAL, MidpointRounding.AwayFromZero));
 
             if (nivelCalculado > _nivel)
             {
                 _nivel = nivelCalculado;
-
-                int novaVelocidade = Constantes.VELOCIDADE_INICIAL_MS
-                    - (_nivel - 1) * Constantes.REDUCAO_VELOCIDADE_POR_NIVEL_MS;
-
-                _velocidadeMs = Math.Max(novaVelocidade, Constantes.VELOCIDADE_MINIMA_MS);
+                AjustarVelocidade();
                 EfeitosSonoros.TocarSubidaDeNivel();
             }
+            else if (nivelVelocidade > _nivel)
+            {
+                _nivel = nivelVelocidade;
+            }
+        }
+
+        private void AjustarVelocidade()
+        {
+            double fator = Math.Pow(Constantes.VELOCIDADE_DIMINUIR_POR_NIVEL, _nivel - 1);
+            int novaVelocidade = (int)(Constantes.VELOCIDADE_INICIAL_MS * fator);
+            _velocidadeMs = Math.Max(novaVelocidade, Constantes.VELOCIDADE_MINIMA_MS);
         }
 
         /// <summary>
@@ -179,34 +189,75 @@ namespace BrickRace
         private void GerarNovosObstaculosSeNecessario()
         {
             int ativos = _obstaculos.Count(o => o.Ativo);
-            if (ativos >= Constantes.MAX_OBSTACULOS_SIMULTANEOS) return;
+            double velocidadeRelativa = Math.Max(1.0, (1000.0 / _velocidadeMs) / Constantes.VELOCIDADE_MULTIPLICADOR_INICIAL);
+            int maxAtivos = Math.Min(Constantes.OBSTACULOS_MAXIMOS,
+                Constantes.OBSTACULOS_BASE + (_nivel - 1) * Constantes.OBSTACULOS_POR_NIVEL);
 
-            // Sorteia uma faixa e só cria o obstáculo se a verificação
-            // recursiva de espaço livre confirmar que é seguro/justo.
-            int pistaSorteada = _sorteio.Next(2);
-            int linhaInicial = 0;
+            double reducaoGeracao = Math.Max(0.5, 1.0 - (velocidadeRelativa - 1) * 0.08);
+            int maxAtivosPorVelocidade = Math.Max(1, (int)Math.Round(maxAtivos * reducaoGeracao));
+            maxAtivos = Math.Min(maxAtivos, maxAtivosPorVelocidade);
 
-            bool existeConflito = ExisteObstaculoConflitante(_obstaculos, 0, pistaSorteada, linhaInicial);
-
-            if (!existeConflito)
+            if (_sorteio.NextDouble() > reducaoGeracao)
             {
-                _obstaculos.Add(new Obstaculo(linhaInicial, pistaSorteada));
+                return;
             }
-            // Se houver conflito, simplesmente não gera nesta rodada;
-            // a próxima chamada do loop tentará novamente.
 
-            // Caso o número de obstáculos ainda esteja abaixo do mínimo
-            // desejado, tenta complementar na faixa oposta.
-            if (_obstaculos.Count(o => o.Ativo) < Constantes.MIN_OBSTACULOS_SIMULTANEOS)
+            if (ativos >= maxAtivos) return;
+
+            int linhaInicial = 0;
+            int[] pistas = { 0, 1 };
+            if (_sorteio.Next(2) == 1)
             {
-                int pistaOposta = 1 - pistaSorteada;
-                bool conflitoOposto = ExisteObstaculoConflitante(_obstaculos, 0, pistaOposta, linhaInicial);
+                Array.Reverse(pistas);
+            }
 
-                if (!conflitoOposto)
+            foreach (var pista in pistas)
+            {
+                if (_obstaculos.Count(o => o.Ativo) >= maxAtivos)
                 {
-                    _obstaculos.Add(new Obstaculo(linhaInicial, pistaOposta));
+                    break;
+                }
+
+                if (_rodadasBloqueioOposto > 0 && pista != _pistaUltimoGerado)
+                {
+                    continue;
+                }
+
+                if (PodeGerarObstaculo(_obstaculos, pista, linhaInicial))
+                {
+                    _obstaculos.Add(new Obstaculo(linhaInicial, pista));
+                    _pistaUltimoGerado = pista;
+                    _rodadasBloqueioOposto = Constantes.TEMPO_BLOQUEIO_OPOSITO;
+                    break; // Gera apenas um obstáculo por rodada para evitar meteoros simultâneos opostos
                 }
             }
+
+            if (_rodadasBloqueioOposto > 0)
+            {
+                _rodadasBloqueioOposto--;
+            }
+        }
+
+        private bool PodeGerarObstaculo(List<Obstaculo> obstaculos, int pista, int linhaNova)
+        {
+            foreach (var atual in obstaculos)
+            {
+                if (!atual.Ativo) continue;
+
+                bool alturaProxima = Math.Abs(atual.Linha - linhaNova) <= Constantes.MARGEM_SEGURANCA_GERACAO;
+
+                if (atual.Pista == pista && alturaProxima)
+                {
+                    return false;
+                }
+
+                if (atual.Pista != pista && alturaProxima)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
