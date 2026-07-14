@@ -48,7 +48,16 @@ namespace BrickRace
             }
 
             Console.CursorVisible = true;
-            MusicaDeFundo.Parar();
+            
+            // Toca som de derrota se o jogador perdeu (não foi ESC)
+            if (_vidas == 0)
+            {
+                EfeitosSonoros.TocarDerrota();
+            }
+            else
+            {
+                MusicaDeFundo.Parar();
+            }
 
             if (_pontuacao > recordeAtual)
             {

@@ -19,7 +19,9 @@ namespace BrickRace
         public const int OBSTACULOS_MAXIMOS = 6;
         public const int MARGEM_SEGURANCA_GERACAO = 8;
         public const int TEMPO_BLOQUEIO_OPOSITO = 2;
-        public const string CAMINHO_TRILHA_SONORA = "musica.wav";
+        public const string CAMINHO_TRILHA_SONORA = "Final_Lap_Rush.mp3";
+        public const string CAMINHO_SOM_PERDA_VIDA = "perdeu-vida.mp3";
+        public const string CAMINHO_SOM_DERROTA = "som-perdeu-2.mp3";
 
         public static readonly string[] FORMATO_OBSTACULO =
         {
@@ -32,7 +34,7 @@ namespace BrickRace
         {
             "   ^   ",
             "  /A\\  ",
-            " /AAA\\ "
+            " /AAA\\ "       
         };
     }
 }
