@@ -126,13 +126,11 @@ namespace BrickRace
 
                 obstaculo.Descer();
 
-                bool chegouNaLinhaDeColisao = obstaculo.Linha == Constantes.LINHA_COLISAO;
-
-                if (chegouNaLinhaDeColisao && !obstaculo.JaContabilizado)
+                if (Colisao.EstaNaLinhaDeColisao(obstaculo) && !obstaculo.JaContabilizado)
                 {
                     obstaculo.JaContabilizado = true;
 
-                    if (obstaculo.Pista == _carro.Pista)
+                    if (Colisao.Colidiu(obstaculo, _carro))
                     {
                         RegistrarColisao(obstaculo);
                     }
