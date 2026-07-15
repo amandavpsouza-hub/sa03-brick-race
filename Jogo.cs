@@ -83,8 +83,9 @@ namespace BrickRace
         private void EsperarLendoTeclado(int duracaoMs)
         {
             var relogio = System.Diagnostics.Stopwatch.StartNew();
+            int tempoRestante = duracaoMs;
 
-            while (relogio.ElapsedMilliseconds < duracaoMs)
+            while (relogio.ElapsedMilliseconds < tempoRestante)
             {
                 if (Console.KeyAvailable)
                 {
@@ -97,6 +98,10 @@ namespace BrickRace
                     else if (tecla == ConsoleKey.D || tecla == ConsoleKey.RightArrow)
                     {
                         _carro.MoverParaDireita();
+                    }
+                    else if (tecla == ConsoleKey.W || tecla == ConsoleKey.UpArrow)
+                    {
+                        tempoRestante = Math.Max(Constantes.VELOCIDADE_MINIMA_MS, (int)(duracaoMs * 0.5));
                     }
                     else if (tecla == ConsoleKey.Escape)
                     {
