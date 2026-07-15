@@ -16,7 +16,7 @@ namespace BrickRace
         public const int LINHA_COLISAO = ALTURA_PISTA - ALTURA_CARRO;
         public const int OBSTACULOS_BASE = 2;
         public const int OBSTACULOS_POR_NIVEL = 1;
-        public const int OBSTACULOS_MAXIMOS = 6;
+        public const int OBSTACULOS_MAXIMOS = 4;
         public const int MARGEM_SEGURANCA_GERACAO = 8;
         public const int TEMPO_BLOQUEIO_OPOSITO = 2;
         public const string CAMINHO_TRILHA_SONORA = "Final_Lap_Rush.mp3";
